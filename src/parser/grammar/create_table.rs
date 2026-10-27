@@ -514,7 +514,7 @@ pub fn parse_column_definition_list(p: &mut Parser) {
     p.complete(m, SyntaxKind::ColumnDefinitionList);
 }
 
-/// Parse a single column definition: name Type [DEFAULT|MATERIALIZED|ALIAS|EPHEMERAL expr] [CODEC(codec)] [TTL expr] [COMMENT 'comment']
+/// Parse a single column definition: name Type [DEFAULT|MATERIALIZED|ALIAS|EPHEMERAL expr] (CODEC(codec)] | TTL expr | COMMENT 'comment')*
 fn parse_column_definition(p: &mut Parser) {
     let m = p.start();
 
@@ -557,9 +557,9 @@ fn parse_column_definition(p: &mut Parser) {
     p.complete(m, SyntaxKind::ColumnDefinition);
 }
 
-// parse column CODEC, TTL, and COMMENT.
-// Clickhouse < 26.8 requires order COMMENT, CODEC, STATISTICS, TTL.
-// later versions allow any order.
+/// Parse a column's CODEC, TTL and COMMENT.
+/// ClickHouse < 26.8 requires the order COMMENT, CODEC, STATISTICS, TTL.
+/// Later versions allow any order. Note STATISTICS is not parsed yet.
 pub(crate) fn parse_column_modifiers(p: &mut Parser) {
     let (mut seen_codec, mut seen_ttl, mut seen_comment) = (false, false, false);
     loop {

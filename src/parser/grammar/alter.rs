@@ -1228,10 +1228,11 @@ mod tests {
             "ALTER TABLE t MODIFY COLUMN a UInt64 COMMENT 'x' CODEC(ZSTD(1))",
             "ALTER TABLE t ADD COLUMN a UInt64 TTL d + INTERVAL 1 DAY CODEC(ZSTD(1)) COMMENT 'x'",
         ] {
-            let result = parse_to_string(input);
+            let result = parse(input);
             assert!(
-                !result.contains("Error"),
-                "Should not contain Error in:\n{result}"
+                result.errors.is_empty(),
+                "unexpected errors for {input}: {:?}",
+                result.errors
             );
         }
     }
